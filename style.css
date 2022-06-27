@@ -1,0 +1,8 @@
+h1 {
+    color: blue;
+}
+
+canvas {
+    border: 2px green solid;
+    background: rgb(147, 207, 231);
+}

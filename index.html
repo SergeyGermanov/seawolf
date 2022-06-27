@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Seawolf Game</title>
+</head>
+
+<body onload="startGame()">
+    <h1>Seawolf</h1>
+    <div class="canvas"></div>
+    <div style="text-align:center;width:480px;">
+
+        <button onmousedown=" moveLeft()" onmouseup="clearMove()">LEFT</button>
+        <button onmousedown="moveFire()"">Fire</button>
+        <button onmousedown=" moveRight()" onmouseup="clearMove()">RIGHT</button>
+
+    </div>
+</body>
+<script src="script.js"></script>
+
+</html>
