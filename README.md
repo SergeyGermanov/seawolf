@@ -1,2 +1,2 @@
-# seawolf
+# Seawolf
 Seawolf game
