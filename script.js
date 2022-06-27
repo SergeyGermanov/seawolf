@@ -1,11 +1,12 @@
 let torpedo;
 let ship;
+let win = 0;
 
 function startGame() {
-    torpedo = new torpedoComponent(20, 50, "black", 315, 430);
-    shipOne = new shipComponent(50, 10, "green", 0, 0);
-    shipTwo = new shipComponent(50, 10, "olive", 0, 0);
-    shipThree = new shipComponent(50, 10, "white", 0, 0);
+    torpedo = new torpedoComponent(64, 64, "./Img/torpedo.png", 315, 430, "image");
+    shipOne = new shipComponent(64, 64, "./Img/warship1.png", 0, 0, "image");
+    shipTwo = new shipComponent(64, 64, "./Img/warship2.png", 0, 0, "image");
+    shipThree = new shipComponent(64, 64, "./Img/warship3.png", 0, 0, "image");
     gameArea.start();
 }
 
@@ -23,7 +24,12 @@ let gameArea = {
     }
 }
 
-function torpedoComponent(width, height, color, x, y) {
+function torpedoComponent(width, height, color, x, y, type) {
+    this.type = type;
+    if (type === "image") {
+        this.image = new Image();
+        this.image.src = color;
+    }
     this.width = width;
     this.height = height;
     this.speedX = 0;
@@ -32,8 +38,12 @@ function torpedoComponent(width, height, color, x, y) {
     this.y = y;
     this.update = function () {
         ctx = gameArea.context;
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        if (type === "image") {
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        } else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
     }
     this.newPos = function () {
         this.x += this.speedX;
@@ -56,7 +66,12 @@ function torpedoComponent(width, height, color, x, y) {
     }
 }
 
-function shipComponent(width, height, color, x, y) {
+function shipComponent(width, height, color, x, y, type) {
+    this.type = type;
+    if (type === "image") {
+        this.image = new Image();
+        this.image.src = color;
+    }
     this.width = width;
     this.height = height;
     this.speedX = Math.floor(Math.random() * 4) + 1;
@@ -64,8 +79,12 @@ function shipComponent(width, height, color, x, y) {
     this.y = Math.floor(Math.random() * 100);
     this.update = function () {
         ctx = gameArea.context;
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        if (type === "image") {
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        } else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
         this.bombed();
     }
     this.newPos = function () {
@@ -96,6 +115,10 @@ function shipComponent(width, height, color, x, y) {
             this.y = gameArea.canvas.height - this.height;
             this.x = 0;
             this.speedX = 0;
+            win++;
+            if (win === 3) {
+                document.body.querySelector(".canvas").innerHTML = "<h1 style='color:red'>You Won!</h1>";
+            }
             alert("Sunk!");
         }
 
