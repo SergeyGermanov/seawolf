@@ -3,10 +3,11 @@ let ship;
 let win = 0;
 
 function startGame() {
-    torpedo = new torpedoComponent(64, 64, "./Img/torpedo.png", 315, 430, "image");
+    torpedo = new torpedoComponent(64, 64, "./Img/torpedo.png", 300, 430, "image");
     shipOne = new shipComponent(64, 64, "./Img/warship1.png", 0, 0, "image");
     shipTwo = new shipComponent(64, 64, "./Img/warship2.png", 0, 0, "image");
     shipThree = new shipComponent(64, 64, "./Img/warship3.png", 0, 0, "image");
+    scoreField = new scoreComponent("25px", "Consolas", "black", 500, 25, "text");
     gameArea.start();
 }
 
@@ -23,6 +24,21 @@ let gameArea = {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
+
+function scoreComponent(width, height, color, x, y, type) {
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.update = function () {
+        ctx = gameArea.context;
+        ctx.font = this.width + " " + this.height;
+        ctx.fillStyle = color;
+        ctx.fillText(this.text, this.x, this.y);
+    }
+}
+
 
 function torpedoComponent(width, height, color, x, y, type) {
     this.type = type;
@@ -72,11 +88,16 @@ function shipComponent(width, height, color, x, y, type) {
         this.image = new Image();
         this.image.src = color;
     }
+    this.plusOrMinus = Math.random() < 0.5 ? -1 : 1;
     this.width = width;
     this.height = height;
-    this.speedX = Math.floor(Math.random() * 4) + 1;
-    this.x = x;
-    this.y = Math.floor(Math.random() * 100);
+    this.speedX = this.plusOrMinus * (Math.floor(Math.random() * 4) + 1);
+    if (this.plusOrMinus < 0) {
+        this.x = 640 - this.width;
+    } else {
+        this.x = x;
+    }
+    this.y = Math.floor(Math.random() * 200);
     this.update = function () {
         ctx = gameArea.context;
         if (type === "image") {
@@ -93,8 +114,14 @@ function shipComponent(width, height, color, x, y, type) {
     }
     this.goRounds = function () {
         let right = gameArea.canvas.width - this.width;
-        if (this.x > right) {
-            this.x = 0;
+        if (this.plusOrMinus < 0) {
+            if (this.x < 0) {
+                this.x = 640 - this.width;
+            }
+        } else {
+            if (this.x > right) {
+                this.x = 0;
+            }
         }
     }
 
@@ -108,7 +135,6 @@ function shipComponent(width, height, color, x, y, type) {
         let torpedoTop = torpedo.y;
         let torpedoBottom = torpedo.y + torpedo.height;
 
-
         if (!((shipBottom < torpedoTop) || (shipTop > torpedoBottom) || (shipRight < torpedoLeft) || (shipLeft > torpedoRight))) {
             torpedo.y = gameArea.canvas.height - torpedo.height;
             torpedo.speedY = 0;
@@ -119,11 +145,9 @@ function shipComponent(width, height, color, x, y, type) {
             if (win === 3) {
                 document.body.querySelector(".canvas").innerHTML = "<h1 style='color:red'>You Won!</h1>";
             }
-            alert("Sunk!");
+            play("explosion.wav");
         }
-
     }
-
 }
 
 function updateGameArea() {
@@ -136,6 +160,8 @@ function updateGameArea() {
     shipThree.update();
     torpedo.newPos();
     torpedo.update();
+    scoreField.text = "SCORE: " + win;
+    scoreField.update();
 }
 
 function moveLeft() {
@@ -148,8 +174,27 @@ function moveRight() {
 
 function moveFire() {
     torpedo.speedY = -10;
+    play("torpedo.mp3");
 }
 
 function clearMove() {
     torpedo.speedX = 0;
 }
+
+function play(sound) {
+    let audio = new Audio(`./Sounds/${sound}`);
+    audio.play();
+}
+
+window.addEventListener('keydown', function (e) {
+    e.preventDefault();
+    if (win < 3) {
+        (e.key == "ArrowLeft") && moveLeft();
+        (e.key == "ArrowRight") && moveRight();
+        (e.key == "ArrowUp" || e.key == " ") && moveFire();
+    }
+})
+
+window.addEventListener('keyup', function (e) {
+    clearMove();
+})
